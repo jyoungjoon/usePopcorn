@@ -1,19 +1,39 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import StarRating from './StarRating';
-import { useMovies } from './useMovies';
-import { useLocalStorageState } from './useLocalStorageState';
-import { useKey } from './useKey';
+
+
+const KEY = process.env.REACT_APP_KEY;
 
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 
-const KEY = process.env.REACT_APP_KEY;
-
 export default function App() {
+  const [movies, setMovies] = useState([]);
+  const [watched, setWatched] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
   const [query, setQuery] = useState('');
   const [selectedId, setSelectedId] = useState(null);
-  const [watched, setWatched] = useLocalStorageState([], 'watched');
-  const { movies, isLoading, error } = useMovies(query);
+
+  /*
+  useEffect(function () {
+    console.log('After initial render..');
+  }, []);
+
+  useEffect(function () {
+    console.log('After every render..');
+  });
+
+  console.log('During render..');
+
+  useEffect(
+    function () {
+      console.log('On update of query state..');
+    },
+    [query]
+  );
+
+  */
 
   function handleSelectMovie(id) {
     setSelectedId((selectedId) => (id === selectedId ? null : id));
@@ -25,7 +45,6 @@ export default function App() {
 
   function handleAddWatched(movie) {
     setWatched((watched) => [...watched, movie]);
-    // localStorage.setItem('watched', JSON.stringify([...watched, movie]));
   }
 
   function handleDeleteWatched(id) {
@@ -36,9 +55,46 @@ export default function App() {
 
   useEffect(
     function () {
-      localStorage.setItem('watched', JSON.stringify(watched));
+      const controller = new AbortController();
+      async function fetchMovies() {
+        try {
+          setIsLoading(true);
+          setError('');
+
+          const res = await fetch(
+            `http://www.omdbapi.com/?i=tt3896198&apikey=${KEY}&s=${query}`,
+            { signal: controller.signal }
+          );
+
+          if (!res.ok)
+            throw new Error('Something went wrong with fetching movie!');
+
+          const data = await res.json();
+          if (data.Response === 'False') throw new Error('Movie not found!');
+
+          setMovies(data.Search);
+        } catch (err) {
+          if (err.name !== 'AbortError') {
+            console.log(err.message);
+            setError(err.message);
+          }
+        } finally {
+          setIsLoading(false);
+        }
+      }
+      if (query.length < 3) {
+        setMovies([]);
+        setError('');
+        return;
+      }
+      handleCloseMovie();
+      fetchMovies();
+
+      return function () {
+        controller.abort();
+      };
     },
-    [watched]
+    [query]
   );
 
   return (
@@ -48,6 +104,16 @@ export default function App() {
         <NumResults movies={movies} />
       </NavBar>
       <Main>
+        {/* Passing Children as Props: */}
+        {/* <Box element={<MovieList movies={movies} />} />
+        <Box
+          element={
+            <>
+              <WatchedSummary watched={watched} />
+              <WatchedMovieList watched={watched} />
+            </>
+          }
+        /> */}
         <Box>
           {isLoading && <Loader />}
           {!isLoading && !error && (
@@ -58,6 +124,7 @@ export default function App() {
             />
           )}
           {error && <ErrorMessage message={error} />}
+          {/* {isLoading ? <Loader /> : <MovieList movies={movies} />} */}
         </Box>
         <Box>
           {selectedId ? (
@@ -96,6 +163,7 @@ function ErrorMessage({ message }) {
 }
 
 function NavBar({ children }) {
+  //Structural Component
   return (
     <nav className="nav-bar">
       <Logo />
@@ -105,6 +173,7 @@ function NavBar({ children }) {
 }
 
 function Logo() {
+  // Stateless Component
   return (
     <div className="logo">
       <span role="img">🍿</span>
@@ -114,22 +183,7 @@ function Logo() {
 }
 
 function Search({ query, setQuery }) {
-  const inputEl = useRef(null);
-
-  useKey('Enter', function () {
-    if (document.activeElement === inputEl.current) return;
-
-    inputEl.current.focus();
-    setQuery('');
-  });
-
-  // Not the React way of selecting DOM element:
-  // useEffect(function () {
-  //   const el = document.querySelector('.search');
-  //   console.log(el);
-  //   el.focus();
-  // }, []);
-
+  // Stateful Component
   return (
     <input
       className="search"
@@ -137,7 +191,6 @@ function Search({ query, setQuery }) {
       placeholder="Search movies..."
       value={query}
       onChange={(e) => setQuery(e.target.value)}
-      ref={inputEl}
     />
   );
 }
@@ -204,15 +257,6 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
   const [isLoading, setIsLoading] = useState(false);
   const [userRating, setUserRating] = useState(null);
 
-  const countRef = useRef(0);
-
-  useEffect(
-    function () {
-      if (userRating) countRef.current += 1;
-    },
-    [userRating]
-  );
-
   const isWatched = watched.map((movie) => movie.imdbID).includes(selectedId);
   const watchedUserRating = watched.find(
     (movie) => movie.imdbID === selectedId
@@ -231,11 +275,6 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
     Genre: genre,
   } = movie;
 
-  // Early return is a no, no!
-  // if (imdbRating > 8)  return <p>Greatest ever!</p>
-  // Conditionally creating a hook is a no, no!
-  // if (imdbRating > 9) [isTop, setIsTop] = useState(true);
-
   function handleAdd() {
     const newWatchedMovie = {
       imdbID: selectedId,
@@ -245,13 +284,26 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
       imdbRating: Number(imdbRating),
       runtime: Number(runtime.split(' ').at(0)),
       userRating,
-      countRatingDecisions: countRef.current,
     };
     onAddWatched(newWatchedMovie);
     onCloseMovie();
   }
 
-  useKey('Escape', onCloseMovie);
+  useEffect(
+    function () {
+      function callback(e) {
+        if (e.code === 'Escape') {
+          onCloseMovie();
+        }
+      }
+      document.addEventListener('keydown', callback);
+
+      return function () {
+        document.removeEventListener('keydown', callback);
+      };
+    },
+    [onCloseMovie]
+  );
 
   useEffect(
     function () {
@@ -274,6 +326,9 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
       if (!title) return;
       document.title = `Movie | ${title}`;
 
+      // Closure in effect,
+      // A closure is the combination of a function bundled together (enclosed) with references to its surrounding state (the lexical environment). In other words, a closure gives you access to an outer function's scope from an inner function. In JavaScript, closures are created every time a function is created, at function creation time.
+      // Following ${title} was saved in memory at the creation of useEffect function:
       return function () {
         document.title = 'usePopcorn';
         console.log(`Cleaned up effect for Movie: ${title}!`);

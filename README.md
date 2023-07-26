@@ -1,70 +1,89 @@
-# Getting Started with Create React App
+![license](https://img.shields.io/badge/license-ISC-blue.svg) ![usePopcorn](https://img.shields.io/github/languages/count/jyoungjoon/usePopcorn) ![usePopcorn](https://img.shields.io/github/languages/top/jyoungjoon/usePopcorn)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+---
 
-## Available Scripts
+# usePopcorn
 
-In the project directory, you can run:
+## Description
 
-### `npm start`
+![Screenshot](./public/screenshot.png)
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+This is a practice React application that allows users to search for movies from a Movie API (www.omdbapi.com). The main goal of this project was to get a grasp of the useState() hook and the flow of data (props). The application also allows users to rate the movies they watched and save their favorite movies to local storage. This application is not deployed on the web. Please see the installation section below to run the application on your local machine.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+```bash
+npm run start
+```
 
-### `npm test`
+---
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Table of Contents
 
-### `npm run build`
+- [Installation](#installation)
+- [Usage](#usage)
+- [Credits](#credits)
+- [License](#license)
+- [Contributing](#contributing)
+- [Tests](#tests)
+- [Questions](#questions)
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+---
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Installation
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+You will have to run this program in your terminal.
 
-### `npm run eject`
+To install necessary dependencies (inquirer module, etc), run the following command:
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+```bash
+npm i
+```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+---
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## Usage
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+This application runs on web browsers. To run the application, run the following command:
 
-## Learn More
+```bash
+npm start
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+A web browser should open up with the application. If not, open a web browser and go to http://localhost:3000.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+ATTENTION: This app requires an API key from www.omdbapi.com. Please go to the website and request an API key. Once you have the API key, create a .env file in the root directory and add the following line in .env file:
 
-### Code Splitting
+```bash
+REACT_APP_KEY='YOUR_API_KEY'
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+Once you have completed the above steps, you should be able to use the application without any issues.
 
-### Analyzing the Bundle Size
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## Credits
 
-### Making a Progressive Web App
+Thank you, Jonas Schmedtmann, for providing amazing CSS styles, React guides and instructions!
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+---
 
-### Advanced Configuration
+## Contributing
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+For contributions, please create a new branch of the project and submit a pull request. Any contributions are greatly appreciated. Issues can be submitted in the issues section of the repo or by emailing me directly (see Questions section below).
 
-### Deployment
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+## Tests
 
-### `npm run build` fails to minify
+Test feature is not available at this time.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+---
+
+## Questions
+
+If you have any questions about the repo, open an issue or contact me directly at:
+
+Github: [jyoungjoon](https://github.com/jyoungjoon)
+
+Email: lifescriptified@gmail.com
+
+---
